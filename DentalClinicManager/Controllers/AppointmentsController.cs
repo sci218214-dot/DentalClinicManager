@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DentalClinicManager.Data;
 using DentalClinicManager.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace DentalClinicManager.Controllers
 {
+    [Authorize]
     public class AppointmentsController : Controller
     {
-        private readonly DentalClinicManagerContext _context;
+        private readonly AppDbContext _context;
 
-        public AppointmentsController(DentalClinicManagerContext context)
+        public AppointmentsController(AppDbContext context)
         {
             _context = context;
         }
@@ -22,8 +24,10 @@ namespace DentalClinicManager.Controllers
         // GET: Appointments
         public async Task<IActionResult> Index()
         {
-            var dentalClinicManagerContext = _context.Appointment.Include(a => a.Doctor).Include(a => a.Patient);
-            return View(await dentalClinicManagerContext.ToListAsync());
+            var appointments = _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor);
+            return View(await appointments.ToListAsync());
         }
 
         // GET: Appointments/Details/5
@@ -34,10 +38,11 @@ namespace DentalClinicManager.Controllers
                 return NotFound();
             }
 
-            var appointment = await _context.Appointment
-                .Include(a => a.Doctor)
+            var appointment = await _context.Appointments
                 .Include(a => a.Patient)
+                .Include(a => a.Doctor)
                 .FirstOrDefaultAsync(m => m.AppointmentId == id);
+
             if (appointment == null)
             {
                 return NotFound();
@@ -49,14 +54,12 @@ namespace DentalClinicManager.Controllers
         // GET: Appointments/Create
         public IActionResult Create()
         {
-            ViewData["DoctorId"] = new SelectList(_context.Doctor, "DoctorId", "DoctorId");
-            ViewData["PatientId"] = new SelectList(_context.Patient, "PatientId", "Name");
+            ViewData["PatientId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Patients, "PatientId", "Name");
+            ViewData["DoctorId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Doctors, "DoctorId", "Name");
             return View();
         }
 
         // POST: Appointments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AppointmentId,Date,Time,Notes,PatientId,DoctorId")] Appointment appointment)
@@ -67,8 +70,8 @@ namespace DentalClinicManager.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DoctorId"] = new SelectList(_context.Doctor, "DoctorId", "DoctorId", appointment.DoctorId);
-            ViewData["PatientId"] = new SelectList(_context.Patient, "PatientId", "Name", appointment.PatientId);
+            ViewData["PatientId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Patients, "PatientId", "Name", appointment.PatientId);
+            ViewData["DoctorId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Doctors, "DoctorId", "Name", appointment.DoctorId);
             return View(appointment);
         }
 
@@ -80,19 +83,17 @@ namespace DentalClinicManager.Controllers
                 return NotFound();
             }
 
-            var appointment = await _context.Appointment.FindAsync(id);
+            var appointment = await _context.Appointments.FindAsync(id);
             if (appointment == null)
             {
                 return NotFound();
             }
-            ViewData["DoctorId"] = new SelectList(_context.Doctor, "DoctorId", "DoctorId", appointment.DoctorId);
-            ViewData["PatientId"] = new SelectList(_context.Patient, "PatientId", "Name", appointment.PatientId);
+            ViewData["PatientId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Patients, "PatientId", "Name", appointment.PatientId);
+            ViewData["DoctorId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Doctors, "DoctorId", "Name", appointment.DoctorId);
             return View(appointment);
         }
 
         // POST: Appointments/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("AppointmentId,Date,Time,Notes,PatientId,DoctorId")] Appointment appointment)
@@ -122,8 +123,8 @@ namespace DentalClinicManager.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DoctorId"] = new SelectList(_context.Doctor, "DoctorId", "DoctorId", appointment.DoctorId);
-            ViewData["PatientId"] = new SelectList(_context.Patient, "PatientId", "Name", appointment.PatientId);
+            ViewData["PatientId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Patients, "PatientId", "Name", appointment.PatientId);
+            ViewData["DoctorId"] = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Doctors, "DoctorId", "Name", appointment.DoctorId);
             return View(appointment);
         }
 
@@ -135,10 +136,11 @@ namespace DentalClinicManager.Controllers
                 return NotFound();
             }
 
-            var appointment = await _context.Appointment
-                .Include(a => a.Doctor)
+            var appointment = await _context.Appointments
                 .Include(a => a.Patient)
+                .Include(a => a.Doctor)
                 .FirstOrDefaultAsync(m => m.AppointmentId == id);
+
             if (appointment == null)
             {
                 return NotFound();
@@ -152,19 +154,18 @@ namespace DentalClinicManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var appointment = await _context.Appointment.FindAsync(id);
+            var appointment = await _context.Appointments.FindAsync(id);
             if (appointment != null)
             {
-                _context.Appointment.Remove(appointment);
+                _context.Appointments.Remove(appointment);
             }
-
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool AppointmentExists(int id)
         {
-            return _context.Appointment.Any(e => e.AppointmentId == id);
+            return _context.Appointments.Any(e => e.AppointmentId == id);
         }
     }
 }

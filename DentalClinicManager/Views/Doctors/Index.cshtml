@@ -1,53 +1,45 @@
 ﻿@model IEnumerable<DentalClinicManager.Models.Doctor>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "الأطباء";
 }
 
-<h1>Index</h1>
+<h1>الأطباء</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">إضافة طبيب جديد</a>
 </p>
-<table class="table">
-    <thead>
+
+<table class="table table-striped table-hover">
+    <thead class="table-light">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Specialty)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Phone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th></th>
+            <th>الاسم</th>
+            <th>التخصص</th>
+            <th>الهاتف</th>
+            <th>البريد الإلكتروني</th>
+            <th>العمليات</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Specialty)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Phone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.DoctorId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.DoctorId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.DoctorId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Specialty)</td>
+                <td>@Html.DisplayFor(modelItem => item.Phone)</td>
+                <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.DoctorId" class="btn btn-sm btn-warning" title="تعديل">
+                        <i class="bi bi-pencil-square"></i> تعديل
+                    </a>
+                    <a asp-action="Details" asp-route-id="@item.DoctorId" class="btn btn-sm btn-info text-white" title="تفاصيل">
+                        <i class="bi bi-info-circle"></i> تفاصيل
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@item.DoctorId" class="btn btn-sm btn-danger" title="حذف">
+                        <i class="bi bi-trash"></i> حذف
+                    </a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

@@ -7,14 +7,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DentalClinicManager.Data;
 using DentalClinicManager.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace DentalClinicManager.Controllers
 {
+    [Authorize]
     public class DoctorsController : Controller
     {
-        private readonly DentalClinicManagerContext _context;
+        private readonly AppDbContext _context;
 
-        public DoctorsController(DentalClinicManagerContext context)
+        public DoctorsController(AppDbContext context)
         {
             _context = context;
         }
@@ -22,7 +25,7 @@ namespace DentalClinicManager.Controllers
         // GET: Doctors
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Doctor.ToListAsync());
+            return View(await _context.Doctors.ToListAsync());
         }
 
         // GET: Doctors/Details/5
@@ -33,7 +36,7 @@ namespace DentalClinicManager.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctor
+            var doctor = await _context.Doctors
                 .FirstOrDefaultAsync(m => m.DoctorId == id);
             if (doctor == null)
             {
@@ -50,8 +53,6 @@ namespace DentalClinicManager.Controllers
         }
 
         // POST: Doctors/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DoctorId,Name,Specialty,Phone,Email")] Doctor doctor)
@@ -73,7 +74,7 @@ namespace DentalClinicManager.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctor.FindAsync(id);
+            var doctor = await _context.Doctors.FindAsync(id);
             if (doctor == null)
             {
                 return NotFound();
@@ -82,8 +83,6 @@ namespace DentalClinicManager.Controllers
         }
 
         // POST: Doctors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("DoctorId,Name,Specialty,Phone,Email")] Doctor doctor)
@@ -124,7 +123,7 @@ namespace DentalClinicManager.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctor
+            var doctor = await _context.Doctors
                 .FirstOrDefaultAsync(m => m.DoctorId == id);
             if (doctor == null)
             {
@@ -139,10 +138,10 @@ namespace DentalClinicManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var doctor = await _context.Doctor.FindAsync(id);
+            var doctor = await _context.Doctors.FindAsync(id);
             if (doctor != null)
             {
-                _context.Doctor.Remove(doctor);
+                _context.Doctors.Remove(doctor);
             }
 
             await _context.SaveChangesAsync();
@@ -151,7 +150,7 @@ namespace DentalClinicManager.Controllers
 
         private bool DoctorExists(int id)
         {
-            return _context.Doctor.Any(e => e.DoctorId == id);
+            return _context.Doctors.Any(e => e.DoctorId == id);
         }
     }
 }

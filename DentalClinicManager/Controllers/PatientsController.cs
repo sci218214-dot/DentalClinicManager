@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DentalClinicManager.Data;
 using DentalClinicManager.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace DentalClinicManager.Controllers
 {
+    [Authorize]
     public class PatientsController : Controller
     {
         private readonly AppDbContext _context;
@@ -27,6 +30,7 @@ namespace DentalClinicManager.Controllers
             {
                 patients = patients.Where(p => p.Name.Contains(searchString));
             }
+            ViewData["CurrentFilter"] = searchString;
 
             return View(await patients.ToListAsync());
         }
