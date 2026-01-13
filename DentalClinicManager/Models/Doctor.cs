@@ -6,7 +6,7 @@ namespace DentalClinicManager.Models
     {
         public int DoctorId { get; set; }
 
-        [Required(ErrorMessage = "اسم الطبيب مطلوب")]
+        [Required(ErrorMessage = "إسم الطبيب مطلوب")]
         [StringLength(100, MinimumLength = 3, ErrorMessage = "اسم الطبيب يجب أن يكون بين 3 و 100 حرف")]
         public string Name { get; set; } = string.Empty;
 
